@@ -52,11 +52,11 @@ def neg(a: float):
 
 
 def lt(a: float, b: float):
-    return a < b
+    return float(a < b)
 
 
 def eq(a: bool, b: bool):
-    return a == b
+    return float(a == b)
 
 
 def max(a: float, b: float):
@@ -71,12 +71,12 @@ def is_close(a: float, b: float):
 
 def sigmoid(a: float):
     if a > 0:
-        return 1 / (1 + math.exp(-a))
-    return math.exp(a) / (1 + math.exp(a))
+        return 1.0 / (1.0 + math.exp(-a))
+    return math.exp(a) / (1.0 + math.exp(a))
 
 
 def relu(a: float):
-    return max(0, a)
+    return max(0.0, a)
 
 
 def log(a: float):
@@ -102,7 +102,7 @@ def inv_back(a: float, b: float):
 def relu_back(a: float, b: float):
     if a > 0:
         return b
-    return 0
+    return 0.0
 
 
 # ## Task 0.3
@@ -165,7 +165,7 @@ def sum(ls: Iterable[float]):
     """Sum all elements in a list using reduce"""
     res = reduce(ls, add)
     if res is None:
-        return 0
+        return 0.0
     return res
 
 
@@ -173,5 +173,5 @@ def prod(ls: Iterable[float]):
     """Calculate the product of all elements in a list using reduce"""
     res = reduce(ls, mul)
     if res is None:
-        return 1
+        return 1.0
     return res

@@ -22,8 +22,9 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
     Returns:
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
-    # TODO: Implement for Task 1.1.
-    raise NotImplementedError('Need to implement for Task 1.1')
+    f1 = f(*(vals[:arg] + (vals[arg] - epsilon,) + vals[arg + 1 :]))
+    f2 = f(*(vals[:arg] + (vals[arg] + epsilon,) + vals[arg + 1 :]))
+    return  (f2 - f1) / (2 * epsilon)
 
 
 variable_count = 1
@@ -51,6 +52,14 @@ class Variable(Protocol):
         pass
 
 
+def dfs(variable: Variable, visited, res) -> None:
+    if variable.unique_id in visited:
+        return
+    visited.append(variable.unique_id)
+    for parent in variable.parents:
+        dfs(parent, visited, res)
+    res.append(variable)
+
 def topological_sort(variable: Variable) -> Iterable[Variable]:
     """
     Computes the topological order of the computation graph.
@@ -61,8 +70,11 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    res = []
+    visited = []
+    print("dfs")
+    dfs(variable, visited, res)
+    return res
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -76,8 +88,16 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    res = topological_sort(variable)
+    grads = {variable.unique_id: deriv}
+    for var in reversed(res):
+        if len(var.parents) == 0:
+            var.accumulate_derivative(grads[var.unique_id])
+        else:
+            for parent, grad in var.chain_rule(grads[var.unique_id]):
+                if parent.unique_id not in grads:
+                    grads[parent.unique_id] = 0.0
+                grads[parent.unique_id] += grad
 
 
 @dataclass
