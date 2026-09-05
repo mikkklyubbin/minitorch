@@ -52,6 +52,10 @@ class Module:
         res = []
         for el in self._parameters:
             res.append((el, self._parameters[el]))
+        for el in self._modules:
+            f = self._modules[el].named_parameters()
+            for g in f:
+                res.append((el + "." + g[0], g[1]))
         return res
 
     def parameters(self) -> Sequence[Parameter]:
