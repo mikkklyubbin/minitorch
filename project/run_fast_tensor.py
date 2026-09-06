@@ -1,8 +1,10 @@
 import random
+import time
 
 import numba
 
 import minitorch
+
 
 datasets = minitorch.datasets
 FastTensorBackend = minitorch.TensorBackend(minitorch.FastOps)
@@ -70,8 +72,9 @@ class FastTrain:
         optim = minitorch.SGD(self.model.parameters(), learning_rate)
         BATCH = 10
         losses = []
-
+        res= 0
         for epoch in range(max_epochs):
+            start_time = time.perf_counter()
             total_loss = 0.0
             c = list(zip(data.X, data.y))
             random.shuffle(c)
@@ -94,6 +97,7 @@ class FastTrain:
                 optim.step()
 
             losses.append(total_loss)
+            epoch_time = time.perf_counter() - start_time
             # Logging
             if epoch % 10 == 0 or epoch == max_epochs:
                 X = minitorch.tensor(data.X, backend=self.backend)
@@ -102,6 +106,8 @@ class FastTrain:
                 y2 = minitorch.tensor(data.y)
                 correct = int(((out.detach() > 0.5) == y2).sum()[0])
                 log_fn(epoch, total_loss, correct, losses)
+            res += epoch_time / max_epochs
+        print(res)
 
 
 if __name__ == "__main__":
@@ -118,17 +124,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     PTS = args.PTS
+    for name in minitorch.datasets:
+        print(name)
+        data = minitorch.datasets[name](PTS)
+        
+        HIDDEN = int(args.HIDDEN)
+        RATE = args.RATE
 
-    if args.DATASET == "xor":
-        data = minitorch.datasets["Xor"](PTS)
-    elif args.DATASET == "simple":
-        data = minitorch.datasets["Simple"].simple(PTS)
-    elif args.DATASET == "split":
-        data = minitorch.datasets["Split"](PTS)
+        FastTrain(
+            HIDDEN, backend=FastTensorBackend if args.BACKEND != "gpu" else GPUBackend
+        ).train(data, RATE, max_epochs=50)
+        
 
-    HIDDEN = int(args.HIDDEN)
-    RATE = args.RATE
-
-    FastTrain(
-        HIDDEN, backend=FastTensorBackend if args.BACKEND != "gpu" else GPUBackend
-    ).train(data, RATE)

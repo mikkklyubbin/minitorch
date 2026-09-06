@@ -48,7 +48,7 @@ class Linear(minitorch.Module):
 def default_log_fn(epoch, total_loss, correct, losses):
     print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
 
-
+import time
 class TensorTrain:
     def __init__(self, hidden_layers):
         self.hidden_layers = hidden_layers
@@ -71,7 +71,9 @@ class TensorTrain:
         y = minitorch.tensor(data.y)
 
         losses = []
+        res = 0
         for epoch in range(1, self.max_epochs + 1):
+            start_time = time.perf_counter()
             total_loss = 0.0
             correct = 0
             optim.zero_grad()
@@ -87,17 +89,21 @@ class TensorTrain:
 
             # Update
             optim.step()
-
+            epoch_time = time.perf_counter() - start_time
             # Logging
             if epoch % 10 == 0 or epoch == max_epochs:
                 y2 = minitorch.tensor(data.y)
                 correct = int(((out.detach() > 0.5) == y2).sum()[0])
                 log_fn(epoch, total_loss, correct, losses)
+            res += epoch_time / self.max_epochs
+        print(res)
 
 
 if __name__ == "__main__":
     PTS = 50
     HIDDEN = 2
     RATE = 0.5
-    data = minitorch.datasets["Simple"](PTS)
-    TensorTrain(HIDDEN).train(data, RATE)
+    for name in minitorch.datasets:
+        print(name)
+        data = minitorch.datasets[name](PTS)
+        TensorTrain(HIDDEN).train(data, RATE, max_epochs=500)
