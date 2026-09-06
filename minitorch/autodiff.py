@@ -22,10 +22,11 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
     Returns:
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
+    print(f)
     f1 = f(*(vals[:arg] + (vals[arg] - epsilon,) + vals[arg + 1 :]))
     f2 = f(*(vals[:arg] + (vals[arg] + epsilon,) + vals[arg + 1 :]))
-    return  (f2 - f1) / (2 * epsilon)
-
+    gr1 = (f2 - f1) / (2 * epsilon)
+    return gr1
 
 variable_count = 1
 
@@ -53,7 +54,7 @@ class Variable(Protocol):
 
 
 def dfs(variable: Variable, visited, res) -> None:
-    if variable.unique_id in visited:
+    if variable.unique_id in visited or variable.is_constant():
         return
     visited.append(variable.unique_id)
     for parent in variable.parents:
@@ -72,7 +73,6 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     """
     res = []
     visited = []
-    print("dfs")
     dfs(variable, visited, res)
     return res
 

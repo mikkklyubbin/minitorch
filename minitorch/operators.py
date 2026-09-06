@@ -52,6 +52,8 @@ def neg(a: float):
 
 
 def lt(a: float, b: float):
+    if is_close(a, b):
+        return 0.0
     return float(a < b)
 
 
@@ -66,7 +68,7 @@ def max(a: float, b: float):
 
 
 def is_close(a: float, b: float):
-    return abs(a - b) < 1e-6
+    return abs(a - b) < 1e-4
 
 
 def sigmoid(a: float):
