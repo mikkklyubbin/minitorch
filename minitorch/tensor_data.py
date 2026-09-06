@@ -42,7 +42,10 @@ def index_to_position(index: Index, strides: Strides) -> int:
     Returns:
         Position in storage
     """
-    return int(np.sum(np.dot(index, strides)))
+    pos = 0
+    for i in range(len(index)):
+        pos += index[i] * strides[i]
+    return pos
     
 
 
@@ -59,9 +62,10 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
         out_index : return index corresponding to position.
 
     """
+    cur = 1
     for i in range(len(shape) - 1, -1, -1):
-        out_index[i] = ordinal % shape[i]
-        ordinal = ordinal // shape[i]
+        out_index[i] = (ordinal // cur) % shape[i]
+        cur *= shape[i]
 
 
 def broadcast_index(
@@ -236,9 +240,6 @@ class TensorData:
         Returns:
             New `TensorData` with the same storage and a new dimension order.
         """
-        print(self.strides)
-        print(list(order))
-        print(self._strides)
         nw = self._strides[list(order)]
         nw2 = tuple(nw.tolist())
         res = []

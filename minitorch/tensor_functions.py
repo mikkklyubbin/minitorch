@@ -385,14 +385,9 @@ def grad_central_difference(
 ) -> float:
     y = vals[arg]
     up = zeros(y.shape)
-    print(ind)
     up[ind] = epsilon
-    print("CEN DIFF")
-    print(vals, arg, f)
     vals1 = [x if j != arg else x + up for j, x in enumerate(vals)]
     vals2 = [x if j != arg else x - up for j, x in enumerate(vals)]
-    print(vals1, vals2)
-    print(f(*vals1), f(*vals2))
     delta: Tensor = f(*vals1).sum() - f(*vals2).sum()
 
     return delta[0] / (2.0 * epsilon)

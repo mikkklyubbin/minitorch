@@ -52,13 +52,11 @@ def neg(a: float):
 
 
 def lt(a: float, b: float):
-    if is_close(a, b):
-        return 0.0
-    return float(a < b)
+    return  1.0 if a < b else 0.0
 
 
-def eq(a: bool, b: bool):
-    return float(a == b)
+def eq(a: float, b: float) -> float:
+    return 1.0 if a == b else 0.0
 
 
 def max(a: float, b: float):
@@ -78,7 +76,7 @@ def sigmoid(a: float):
 
 
 def relu(a: float):
-    return max(0.0, a)
+    return a if a > 0.0 else 0.0
 
 
 def log(a: float):

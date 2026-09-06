@@ -140,7 +140,6 @@ class Scalar:
         Args:
             x: value to be accumulated
         """
-        print(self.unique_id, "accumulate_derivative", x)
         assert self.is_leaf(), "Only leaf variables can have derivatives."
         if self.derivative is None:
             self.derivative = 0.0
@@ -200,8 +199,6 @@ Derivative check at arguments f(%s) and received derivative f'=%f for argument %
 but was expecting derivative f'=%f from central difference."""
     for i, x in enumerate(scalars):
         check = central_difference(f, *scalars, arg=i)
-        print(str([x.data for x in scalars]), x.derivative, i, check)
-        print(x.unique_id, x.derivative)
         assert x.derivative is not None
 
         np.testing.assert_allclose(
